@@ -1,0 +1,45 @@
+<%-- any content can be specified here e.g.: --%>
+<%@page import="db.User"%>
+<%@page import="db.DbConnector"%>
+<%@page import="db.User"%>
+<%@page import="java.util.ArrayList"%>
+<%@ page pageEncoding="UTF-8" %>
+<h1>ArthurJurosApp</h1>
+
+
+<% 
+    String errorMessage = null;
+    if(request.getParameter("session.login")!=null){
+        String name = request.getParameter("session.name");
+        String pass = request.getParameter("session.password");
+        User user = DbConnector.getUser(name, pass);
+        if(user != null){
+            session.setAttribute("session.username", user.getName());
+            session.setAttribute("session.name", user.getName());
+            response.sendRedirect(request.getRequestURI());
+        }else{
+            errorMessage = "Usuário e/ou senha inválidos!";
+        }
+    }else if(request.getParameter("session.logout")!=null){
+        session.removeAttribute("session.username");
+        session.removeAttribute("session.name");
+        response.sendRedirect(request.getRequestURI());
+    } %>
+    
+    <% if(errorMessage != null){ %>
+    <div style="color: red"><%= errorMessage %></div>
+    <% } %>
+
+    <% if(session.getAttribute("session.name") == null) { %>
+    <input type="text" name="session.username" placeholder="Entre com seu nome" required/>
+    <input type="password" name="session.password" placeholder="Entre com sua senha" required/>
+    <input type ="submit" name="session.login" value="Login"/>
+    <%} else {%>
+    <a href="index.jsp">Home</a>
+    <a href="juros.jsp">Juros</a>
+    <a href="history.jsp">History</a>
+    <input type="submit" name="Sair" value="Sair"/>
+    <%if (request.getParameter("Sair") != null) {
+    session.removeAttribute("username");
+    response.sendRedirect(request.getRequestURI());}%>
+    <%}%>
